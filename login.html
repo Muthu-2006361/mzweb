@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MZ Placements - Sign In</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .login-tabs {
+            display: flex;
+            gap: 4px;
+            background: rgba(0, 0, 0, 0.04);
+            border-radius: 14px;
+            padding: 4px;
+            margin-bottom: 28px;
+        }
+
+        .login-tabs button {
+            flex: 1;
+            padding: 12px 16px;
+            border: none;
+            border-radius: 12px;
+            background: transparent;
+            font-family: inherit;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .login-tabs button i {
+            font-size: 0.9rem;
+        }
+
+        .login-tabs button.active {
+            background: #fff;
+            color: var(--primary);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(99, 102, 241, 0.08);
+        }
+
+        .login-tabs button:hover:not(.active) {
+            color: var(--text-primary);
+        }
+
+        .login-section {
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(12px) scale(0.96);
+            filter: blur(6px);
+            transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+                        transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+                        filter 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+                        visibility 0.45s;
+            height: 0;
+            overflow: hidden;
+            will-change: transform, opacity, filter;
+        }
+
+        .login-section.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0) scale(1);
+            filter: blur(0);
+            height: auto;
+            overflow: visible;
+        }
+
+        .login-section .admin-hint {
+            font-size: 0.75rem;
+            color: var(--text-muted, #94a3b8);
+            margin-top: -12px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body class="login-body">
+    <!-- ============ HEADER ============ -->
+    <header class="mzcet-header">
+        <div class="container-fluid">
+            <div class="mzcet-header-content">
+                <div class="mzcet-header-logo">
+                    <img src="mzcetlogo.png" alt="MZCET Logo">
+                </div>
+                <div class="mzcet-header-text">
+                    <h1>MOUNT ZION COLLEGE OF ENGINEERING &amp; TECHNOLOGY</h1>
+                    <p class="mzcet-header-subtitle">(An Autonomous Institution)</p>
+                    <p class="mzcet-header-info">(Approved by AICTE & Affiliated to Anna University, Accredited by NAAC with A+ grade and NBA - CSE/ECE/ECE/EEE)</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Background animations -->
+    <div class="bg-decor decor-1"></div>
+    <div class="bg-decor decor-2"></div>
+
+    <!-- Interactive Background Layers -->
+    <div class="tech-grid"></div>
+    <div class="mouse-glow"></div>
+
+    <!-- Building Background -->
+    <div class="bg-building"></div>
+
+    <!-- College Crest Watermark -->
+    <div class="bg-watermark">
+        <img src="mzcetlogo.png" alt="MZCET Watermark" draggable="false" style="width:100%;height:100%;object-fit:contain;">
+    </div>
+
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <div class="logo-wrapper"><img src="mzcetlogo.png" alt="MZ Placements" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;"></div>
+                <h2 class="card-title">MZ Placements</h2>
+                <p class="card-subtitle">Sign in to access the portal</p>
+            </div>
+
+            <!-- Error message container -->
+            <div id="error-message" class="error-box">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                <span id="error-text">Incorrect credentials</span>
+            </div>
+
+            <form id="loginForm" novalidate>
+                <!-- User Type Selection Dropdown (Custom Styled) -->
+                <div class="form-group" style="position: relative; z-index: 200;">
+                    <div class="custom-select-wrapper" id="userTypeSelectWrapper">
+                        <div class="custom-select-trigger input-field select-field">
+                            <span class="selected-text" id="selectedUserText">Student</span>
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                            <label class="form-label floating-select-label">Select User Type</label>
+                            <i class="fas fa-chevron-down select-chevron"></i>
+                        </div>
+                        <div class="custom-options">
+                            <div class="custom-option selected" data-value="student">
+                                <i class="fas fa-user-graduate option-icon"></i>
+                                <span>Student</span>
+                            </div>
+                            <div class="custom-option" data-value="hod">
+                                <i class="fas fa-chalkboard-user option-icon"></i>
+                                <span>HOD</span>
+                            </div>
+                            <div class="custom-option" data-value="principal">
+                                <i class="fas fa-graduation-cap option-icon"></i>
+                                <span>Principal</span>
+                            </div>
+                            <div class="custom-option" data-value="alumni">
+                                <i class="fas fa-user-tie option-icon"></i>
+                                <span>Alumni</span>
+                            </div>
+                            <div class="custom-option" data-value="admin">
+                                <i class="fas fa-shield-halved option-icon"></i>
+                                <span>Admin</span>
+                            </div>
+                        </div>
+                        <!-- Hidden input to store selected value -->
+                        <input type="hidden" id="userTypeSelect" value="student">
+                    </div>
+                </div>
+                <!-- Student Login Section -->
+                <div class="login-section active" id="studentSection">
+                    <div class="form-group">
+                        <div class="input-wrapper">
+                            <input type="text" id="registerNumber" class="input-field" placeholder=" " autocomplete="off">
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="4" width="18" height="16" rx="2" ry="2"></rect>
+                                <line x1="7" y1="8" x2="17" y2="8"></line>
+                                <line x1="7" y1="12" x2="17" y2="12"></line>
+                                <line x1="7" y1="16" x2="13" y2="16"></line>
+                            </svg>
+                            <label for="registerNumber" class="form-label">Register Number</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="input-wrapper">
+                            <input type="password" id="password" class="input-field" placeholder=" ">
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                            </svg>
+                            <label for="password" class="form-label">Password</label>
+                            <button type="button" id="passwordToggle" class="password-toggle" aria-label="Toggle Password Visibility">
+                                <svg id="eyeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-forgot">
+                        <a href="#" id="forgotLink">Forgot Password?</a>
+                    </div>
+                </div>
+
+                <!-- HOD Login Section -->
+                <div class="login-section" id="hodSection">
+                    <div class="form-group">
+                        <div class="input-wrapper">
+                            <input type="text" id="hodId" class="input-field" placeholder=" " autocomplete="off">
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                            <label for="hodId" class="form-label">HOD ID</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-wrapper">
+                            <input type="password" id="hodPassword" class="input-field" placeholder=" ">
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                            </svg>
+                            <label for="hodPassword" class="form-label">HOD Password</label>
+                            <button type="button" id="hodPasswordToggle" class="password-toggle" aria-label="Toggle HOD Password Visibility">
+                                <svg id="hodEyeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <p class="admin-hint"><i class="fas fa-lock"></i> Enter HOD credentials to manage department portals</p>
+                </div>
+
+                <!-- Principal Login Section -->
+                <div class="login-section" id="principalSection">
+                    <div class="form-group">
+                        <div class="input-wrapper">
+                            <input type="text" id="principalId" class="input-field" placeholder=" " autocomplete="off">
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                            <label for="principalId" class="form-label">Principal ID</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-wrapper">
+                            <input type="password" id="principalPassword" class="input-field" placeholder=" ">
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                            </svg>
+                            <label for="principalPassword" class="form-label">Principal Password</label>
+                            <button type="button" id="principalPasswordToggle" class="password-toggle" aria-label="Toggle Principal Password Visibility">
+                                <svg id="principalEyeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <p class="admin-hint"><i class="fas fa-lock"></i> Enter Principal credentials to access institution portals</p>
+                </div>
+
+                <!-- Alumni Login Section -->
+                <div class="login-section" id="alumniSection">
+                    <div class="form-group">
+                        <div class="input-wrapper">
+                            <input type="text" id="alumniId" class="input-field" placeholder=" " autocomplete="off">
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                            <label for="alumniId" class="form-label">Alumni ID</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-wrapper">
+                            <input type="password" id="alumniPassword" class="input-field" placeholder=" ">
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                            </svg>
+                            <label for="alumniPassword" class="form-label">Alumni Password</label>
+                            <button type="button" id="alumniPasswordToggle" class="password-toggle" aria-label="Toggle Alumni Password Visibility">
+                                <svg id="alumniEyeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <p class="admin-hint"><i class="fas fa-lock"></i> Enter your alumni credentials to access your portal.</p>
+                </div>
+
+                <!-- Admin Login Section -->
+                <div class="login-section" id="adminSection">
+                    <div class="form-group">
+                        <div class="input-wrapper">
+                            <input type="text" id="adminId" class="input-field" placeholder=" " autocomplete="off">
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                            <label for="adminId" class="form-label">Admin ID</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-wrapper">
+                            <input type="password" id="adminPassword" class="input-field" placeholder=" ">
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                            </svg>
+                            <label for="adminPassword" class="form-label">Admin Password</label>
+                            <button type="button" id="adminPasswordToggle" class="password-toggle" aria-label="Toggle Admin Password Visibility">
+                                <svg id="adminEyeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <p class="admin-hint"><i class="fas fa-lock"></i> Enter the admin ID and password to manage websites</p>
+                </div>
+
+                <button type="submit" class="btn-submit" id="loginSubmitBtn">
+                    <span class="btn-text"><i class="fas fa-right-to-bracket"></i>&nbsp; Sign In</span>
+                    <span class="btn-spinner"></span>
+                    <span class="btn-checkmark">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <footer class="site-footer">
+        <div class="footer-contact">
+            <span><i class="fas fa-phone-alt"></i> +91-7373344444</span>
+            <span><i class="fas fa-envelope"></i> info@mountzion.ac.in</span>
+            <span><i class="fas fa-map-marker-alt"></i> Lena Vilakku, Pillivalam Post, Pudukkottai – 622507</span>
+        </div>
+
+        <div class="footer-copyright">
+            &copy; <span id="year"></span> MZ Placements. All rights reserved.
+        </div>
+    </footer>
+
+    <!-- Password Change Modal -->
+    <div id="passwordChangeModal" class="password-change-overlay" style="display:none;">
+        <div class="password-change-card">
+            <div class="password-change-header">
+                <button type="button" id="passwordChangeBackBtn" class="back-button" aria-label="Go back">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                </button>
+                <div class="password-change-icon"><i class="fas fa-key"></i></div>
+                <h3>Set New Password</h3>
+                <p>Your account is using the default password. Please set a new password to continue.</p>
+            </div>
+            <form id="passwordChangeForm" novalidate>
+                <div class="password-change-error" id="passwordChangeError" style="display:none;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    <span id="passwordChangeErrorText"></span>
+                </div>
+                <div class="password-change-success" id="passwordChangeSuccess" style="display:none;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                    </svg>
+                    <span>Password changed successfully!</span>
+                </div>
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <input type="password" id="newPasswordInput" class="input-field" placeholder=" " minlength="8" required>
+                        <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                        <label for="newPasswordInput" class="form-label">New Password</label>
+                        <button type="button" id="newPasswordToggle" class="password-toggle" aria-label="Toggle New Password Visibility">
+                            <svg id="newPasswordEye" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="password-conditions" id="passwordConditions">
+                    <div class="condition" data-condition="length"><i class="fas fa-circle"></i> At least 8 characters</div>
+                    <div class="condition" data-condition="uppercase"><i class="fas fa-circle"></i> At least 1 uppercase letter</div>
+                    <div class="condition" data-condition="lowercase"><i class="fas fa-circle"></i> At least 1 lowercase letter</div>
+                    <div class="condition" data-condition="number"><i class="fas fa-circle"></i> At least 1 number</div>
+                    <div class="condition" data-condition="special"><i class="fas fa-circle"></i> At least 1 special character</div>
+                </div>
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <input type="password" id="confirmPasswordInput" class="input-field" placeholder=" " minlength="8" required>
+                        <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                        <label for="confirmPasswordInput" class="form-label">Confirm Password</label>
+                        <button type="button" id="confirmPasswordToggle" class="password-toggle" aria-label="Toggle Confirm Password Visibility">
+                            <svg id="confirmPasswordEye" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <button type="submit" class="btn-submit" id="passwordChangeSubmitBtn">
+                    <span class="btn-text"><i class="fas fa-save"></i>&nbsp; Set Password</span>
+                    <span class="btn-spinner"></span>
+                    <span class="btn-checkmark">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Forgot Password Modal -->
+    <div id="forgotPasswordOverlay" class="password-change-overlay" style="display:none;">
+        <div class="password-change-card">
+            <div class="password-change-header">
+                <div class="password-change-icon"><i class="fas fa-lock"></i></div>
+                <h3>Forgot Password</h3>
+                <p>Enter your Register Number and Date of Birth to verify your identity.</p>
+            </div>
+            <div id="forgotStepVerify">
+                <div class="password-change-error" id="forgotError" style="display:none;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    <span id="forgotErrorText"></span>
+                </div>
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <input type="text" id="forgotRegNumber" class="input-field" placeholder=" " autocomplete="off">
+                        <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="4" width="18" height="16" rx="2" ry="2"></rect>
+                            <line x1="7" y1="8" x2="17" y2="8"></line>
+                            <line x1="7" y1="12" x2="17" y2="12"></line>
+                            <line x1="7" y1="16" x2="13" y2="16"></line>
+                        </svg>
+                        <label for="forgotRegNumber" class="form-label">Register Number</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <input type="text" id="forgotDob" class="input-field" placeholder=" " maxlength="10" autocomplete="off">
+                        <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                        <label for="forgotDob" class="form-label">Date of Birth (DD/MM/YYYY)</label>
+                    </div>
+                </div>
+                <button type="button" class="btn-submit" id="forgotVerifyBtn">
+                    <span class="btn-text"><i class="fas fa-check"></i>&nbsp; Verify</span>
+                    <span class="btn-spinner"></span>
+                    <span class="btn-checkmark">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </span>
+                </button>
+                <div style="text-align:center;margin-top:16px;">
+                    <a href="#" id="forgotBackLink" style="font-size:0.82rem;color:var(--text-secondary);text-decoration:none;"><i class="fas fa-arrow-left"></i> Back to Sign In</a>
+                </div>
+            </div>
+            <div id="forgotStepReset" style="display:none;">
+                <form id="forgotResetForm" novalidate>
+                    <div class="password-change-error" id="forgotResetError" style="display:none;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        <span id="forgotResetErrorText"></span>
+                    </div>
+                    <div class="password-change-success" id="forgotResetSuccess" style="display:none;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                        <span>Password reset successfully!</span>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-wrapper">
+                            <input type="password" id="forgotNewPassword" class="input-field" placeholder=" " minlength="8" required>
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                            </svg>
+                            <label for="forgotNewPassword" class="form-label">New Password</label>
+                            <button type="button" id="forgotNewPasswordToggle" class="password-toggle" aria-label="Toggle New Password Visibility">
+                                <svg id="forgotNewPasswordEye" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="password-conditions" id="forgotPasswordConditions">
+                        <div class="condition" data-condition="length"><i class="fas fa-circle"></i> At least 8 characters</div>
+                        <div class="condition" data-condition="uppercase"><i class="fas fa-circle"></i> At least 1 uppercase letter</div>
+                        <div class="condition" data-condition="lowercase"><i class="fas fa-circle"></i> At least 1 lowercase letter</div>
+                        <div class="condition" data-condition="number"><i class="fas fa-circle"></i> At least 1 number</div>
+                        <div class="condition" data-condition="special"><i class="fas fa-circle"></i> At least 1 special character</div>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-wrapper">
+                            <input type="password" id="forgotConfirmPassword" class="input-field" placeholder=" " minlength="8" required>
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                            </svg>
+                            <label for="forgotConfirmPassword" class="form-label">Confirm Password</label>
+                            <button type="button" id="forgotConfirmPasswordToggle" class="password-toggle" aria-label="Toggle Confirm Password Visibility">
+                                <svg id="forgotConfirmPasswordEye" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-submit" id="forgotResetSubmitBtn">
+                        <span class="btn-text"><i class="fas fa-save"></i>&nbsp; Reset Password</span>
+                        <span class="btn-spinner"></span>
+                        <span class="btn-checkmark">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        </span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .password-change-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            animation: fadeIn 0.3s ease;
+        }
+        .password-change-card {
+            background: var(--card-bg, #fff);
+            border-radius: 24px;
+            padding: 40px 32px 32px;
+            width: 90%;
+            max-width: 420px;
+            box-shadow: 0 25px 80px rgba(0,0,0,0.3);
+            animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+        }
+        .password-change-header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+        .password-change-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary, #6366f1), var(--primary-dark, #4f46e5));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 1.6rem;
+            color: #fff;
+        }
+        .password-change-header h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-primary, #1e293b);
+            margin: 0 0 8px;
+        }
+        .password-change-header p {
+            font-size: 0.85rem;
+            color: var(--text-secondary, #64748b);
+            margin: 0;
+            line-height: 1.5;
+        }
+        .back-button {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            background: none;
+            border: none;
+            color: var(--text-secondary, #64748b);
+            cursor: pointer;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        .back-button:hover {
+            background-color: #f1f5f9;
+            color: var(--text-primary, #1e293b);
+        }
+        .back-button:active {
+            transform: scale(0.95);
+        }
+        .password-change-error {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #fef2f2;
+            color: #dc2626;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            margin-bottom: 16px;
+        }
+        .password-change-success {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #f0fdf4;
+            color: #16a34a;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            margin-bottom: 16px;
+        }
+        .password-conditions {
+            margin: -8px 0 16px;
+            padding: 12px 16px;
+            background: #f8fafc;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+        .password-conditions .condition {
+            font-size: 0.78rem;
+            color: var(--text-secondary, #64748b);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 3px 0;
+            transition: color 0.3s;
+        }
+        .password-conditions .condition i {
+            font-size: 0.5rem;
+            color: #cbd5e1;
+            transition: color 0.3s;
+        }
+        .password-conditions .condition.met {
+            color: #16a34a;
+        }
+        .password-conditions .condition.met i {
+            color: #16a34a;
+        }
+        .password-conditions .condition.met i::before {
+            content: "\f058";
+        }
+        .generate-password-btn {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--primary, #6366f1);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 8px;
+            transition: background 0.2s, color 0.2s;
+            z-index: 2;
+        }
+        .generate-password-btn:hover {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--primary-dark, #4f46e5);
+        }
+        .generate-tooltip {
+            visibility: hidden;
+            opacity: 0;
+            position: absolute;
+            bottom: calc(100% + 8px);
+            right: 0;
+            background: #1e293b;
+            color: #fff;
+            font-size: 0.72rem;
+            padding: 6px 10px;
+            border-radius: 6px;
+            white-space: nowrap;
+            pointer-events: none;
+            transition: opacity 0.2s;
+            font-family: inherit;
+        }
+        .generate-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            right: 14px;
+            border: 5px solid transparent;
+            border-top-color: #1e293b;
+        }
+        .generate-password-btn:hover .generate-tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px) scale(0.96); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+    </style>
+
+    <script src="app.js" defer></script>
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
+</body>
+</html>

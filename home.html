@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MZ Placements - Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Inter:wght@300;400;450;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="dashboard-body">
+  <!-- ============ HEADER ============ -->
+  <header class="mzcet-header">
+    <div class="container-fluid">
+      <div class="mzcet-header-content">
+        <div class="mzcet-header-logo">
+          <img src="mzcetlogo.png" alt="MZCET Logo">
+        </div>
+        <div class="mzcet-header-text">
+          <h1>MOUNT ZION COLLEGE OF ENGINEERING &amp; TECHNOLOGY</h1>
+          <p class="mzcet-header-subtitle">(An Autonomous Institution)</p>
+          <p class="mzcet-header-info">(Approved by AICTE & Affiliated to Anna University, Accredited by NAAC with A+ grade and NBA - CSE/ECE/ECE/EEE)</p>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="gradient-orb"></div>
+  <div class="gradient-orb-2"></div>
+  <div class="gradient-orb-3"></div>
+  <div class="bg-particles">
+    <span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span>
+  </div>
+
+  <!-- Interactive Background Layers -->
+  <div class="tech-grid"></div>
+  <div class="mouse-glow"></div>
+
+  <!-- Building Background -->
+  <div class="bg-building"></div>
+
+  <!-- College Crest Watermark -->
+  <div class="bg-watermark">
+    <img src="mzcetlogo.png" alt="MZCET Watermark" draggable="false" style="width:100%;height:100%;object-fit:contain;">
+  </div>
+
+  <div class="dashboard-wrapper">
+    <header class="dashboard-header">
+      <div class="dashboard-logo">
+        <h1>MZ Placements</h1>
+      </div>
+      <div class="user-profile">
+        <div class="user-avatar">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+        </div>
+        <div class="user-info">
+          <div id="userNameDisplay">--</div>
+          <div class="user-reg" id="userRegContainer">Reg : <span id="registerDisplay">--</span></div>
+        </div>
+        <button id="logoutBtn" class="btn-logout">Sign Out</button>
+      </div>
+    </header>
+
+    <!-- Welcome Hero & Search Section -->
+    <div class="welcome-hero">
+      <h2 id="welcomeTitle">Welcome to MZ Placements</h2>
+      <p>Access all placement assessments, career training platforms, and student web portals from a unified dashboard.</p>
+      
+      <div class="search-container">
+        <input type="text" id="searchInput" class="search-input" placeholder="Search portals by name or URL...">
+        <i class="fas fa-search search-icon"></i>
+      </div>
+    </div>
+
+    <!-- Admin Panel Control Bar -->
+    <div class="admin-panel-bar" id="adminPanelBar" style="display: none;">
+      <div class="admin-panel-info">
+        <i class="fas fa-shield-halved"></i>
+        <span>Admin Dashboard Active &mdash; Add, edit or delete placement portal listings.</span>
+      </div>
+      <button class="btn-admin-add" id="adminAddBtn" type="button">
+        <i class="fas fa-plus"></i> Add Portal
+      </button>
+    </div>
+
+    <!-- Cards Grid -->
+    <div class="cards-container" id="cardsContainer"></div>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <div class="footer-contact">
+        <span><i class="fas fa-phone-alt"></i> +91-7373344444</span>
+        <span><i class="fas fa-envelope"></i> info@mountzion.ac.in</span>
+        <span><i class="fas fa-map-marker-alt"></i> Lena Vilakku, Pillivalam Post, Pudukkottai – 622507</span>
+      </div>
+
+      <div class="footer-copyright">
+        &copy; <span id="year"></span> MZ Placements. All rights reserved.
+      </div>
+    </footer>
+  </div>
+
+  <!-- Website Modal (Add / Edit) -->
+  <div class="modal-overlay" id="websiteModal">
+    <div class="modal">
+      <button class="modal-close" id="websiteModalClose" type="button"><i class="fas fa-times"></i></button>
+      <h2 id="websiteModalTitle">Add Website</h2>
+      <p class="modal-sub" id="websiteModalSub">Add a new website card to the portal.</p>
+      <div class="modal-error" id="addWebsiteError">
+        <i class="fas fa-exclamation-circle"></i>
+        <span id="addWebsiteErrorText">Please fill in all fields.</span>
+      </div>
+
+      <div class="logo-preview" id="logoPreview">
+        <i class="fas fa-globe"></i>
+      </div>
+
+      <div class="form-group">
+        <label for="websiteName">Website Name</label>
+        <input type="text" id="websiteName" placeholder="e.g. My Portal">
+      </div>
+
+      <div class="form-group">
+        <label for="websiteUrl">Website URL</label>
+        <input type="url" id="websiteUrl" placeholder="https://example.com">
+        <div class="input-hint">Include http:// or https://</div>
+      </div>
+
+      <div class="form-group">
+        <label>Logo / Icon</label>
+        <div class="tab-switch">
+          <button class="active" data-tab="icon" type="button">Icon</button>
+          <button data-tab="image" type="button">Image URL</button>
+          <button data-tab="upload" type="button">Upload</button>
+        </div>
+        <div id="iconPicker">
+          <div class="icon-picker-grid" id="iconGrid"></div>
+        </div>
+        <div id="imageUrlInput" style="display:none;">
+          <input type="url" id="logoImageUrl" placeholder="https://example.com/logo.png">
+          <div class="input-hint">Enter a direct image URL (PNG, JPG, SVG)</div>
+        </div>
+        <div id="uploadInput" style="display:none;">
+          <div class="file-upload-area">
+            <i class="fas fa-cloud-arrow-up"></i>
+            <p>Click to upload a logo image</p>
+            <div class="file-name" id="uploadFileName"></div>
+            <input type="file" id="logoFileInput" accept="image/png,image/jpeg,image/jpg,image/gif,image/svg+xml,image/webp">
+          </div>
+          <div class="input-hint">Supports PNG, JPG, GIF, SVG, WebP</div>
+        </div>
+      </div>
+
+      <button class="btn-primary" id="websiteModalSubmit" type="button">
+        <i class="fas fa-plus"></i>&nbsp; <span id="websiteModalSubmitText">Add Website</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Floating Add Button (Kept for compatibility, styled transparent/hidden) -->
+  <button class="fab-add" id="fabAdd" title="Add Website" style="display:none !important;">
+    <i class="fas fa-plus"></i>
+  </button>
+
+  <script src="app.js" defer></script>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
