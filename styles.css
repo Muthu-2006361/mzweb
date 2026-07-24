@@ -540,12 +540,10 @@ body.dark-theme .input-field:focus {
     top: calc(100% + 8px);
     left: 0;
     right: 0;
-    background: var(--bg-surface);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border: 1.5px solid var(--border-color);
+    background: #ffffff;
+    border: 1.5px solid #e2e8f0;
     border-radius: var(--radius-base);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(99, 102, 241, 0.04);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15), 0 8px 24px rgba(0, 0, 0, 0.08);
     opacity: 0;
     visibility: hidden;
     transform: translateY(-10px);
@@ -554,6 +552,13 @@ body.dark-theme .input-field:focus {
                 visibility 0.3s;
     overflow: hidden;
     z-index: 999;
+    clip-path: inset(0 round var(--radius-base));
+}
+
+body.dark-theme .custom-options {
+    background: #1e293b;
+    border-color: #334155;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.25);
 }
 
 .custom-select-wrapper.open .custom-options {
@@ -572,7 +577,7 @@ body.dark-theme .input-field:focus {
     display: flex;
     align-items: center;
     gap: 12px;
-    color: var(--text-secondary);
+    color: #1F2937;
     font-size: 14.2px;
     font-weight: 500;
     cursor: pointer;
@@ -580,43 +585,57 @@ body.dark-theme .input-field:focus {
 }
 
 .custom-option:hover {
-    background: rgba(99, 102, 241, 0.06);
-    color: var(--primary);
+    background: #f1f5f9;
+    color: #4f46e5;
     transform: translateX(4px);
 }
 
+body.dark-theme .custom-option {
+    color: #e2e8f0;
+}
+
 body.dark-theme .custom-option:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.08);
     color: #ffffff;
 }
 
 .custom-option.selected {
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.06) 100%);
-    color: var(--primary);
+    background: #6366f1;
+    color: #ffffff;
     font-weight: 600;
 }
 
 body.dark-theme .custom-option.selected {
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(139, 92, 246, 0.1) 100%);
-    color: #ffffff;
+    background: #818cf8;
+    color: #0f172a;
 }
 
 .custom-option .option-icon {
     font-size: 1.05rem;
-    color: var(--text-muted);
+    color: #94a3b8;
     width: 20px;
     text-align: center;
     transition: color var(--transition-fast);
 }
 
-.custom-option:hover .option-icon,
-.custom-option.selected .option-icon {
-    color: var(--primary);
+.custom-option:hover .option-icon {
+    color: #4f46e5;
 }
 
-body.dark-theme .custom-option:hover .option-icon,
-body.dark-theme .custom-option.selected .option-icon {
+.custom-option.selected .option-icon {
     color: #ffffff;
+}
+
+body.dark-theme .custom-option .option-icon {
+    color: #64748b;
+}
+
+body.dark-theme .custom-option:hover .option-icon {
+    color: #ffffff;
+}
+
+body.dark-theme .custom-option.selected .option-icon {
+    color: #0f172a;
 }
 
 .select-chevron {
