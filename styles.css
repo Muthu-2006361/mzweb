@@ -1528,7 +1528,6 @@ body.dark-theme .tab-switch button.active {
     max-width: 1400px;
     margin: 0 auto;
     padding: 32px 32px 24px;
-    border-top: 1px solid var(--border-color);
     text-align: center;
     z-index: 5;
     position: relative;
