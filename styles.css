@@ -274,7 +274,7 @@ body.dark-theme .bg-building {
 }
 
 .mzcet-header-logo img {
-    height: 72px;
+    height: 96px;
     width: auto;
     filter: drop-shadow(0 4px 10px rgba(0, 36, 114, 0.15));
     transition: var(--transition-fast);
@@ -363,8 +363,8 @@ body:not(.dark-theme) .mzcet-header-text h1 {
 }
 
 .login-body .logo-wrapper {
-    width: 60px;
-    height: 60px;
+    width: 84px;
+    height: 84px;
     border-radius: 16px;
     display: inline-flex;
     justify-content: center;
@@ -1617,7 +1617,7 @@ body.dark-theme .tab-switch button.active {
     }
     
     .mzcet-header-logo img {
-        height: 56px;
+        height: 68px;
     }
     
     .mzcet-header-text h1 {
