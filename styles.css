@@ -154,19 +154,20 @@ body {
     position: fixed;
     inset: 0;
     background-image: 
-        linear-gradient(to right, rgba(16, 185, 129, 0.03) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(16, 185, 129, 0.03) 1px, transparent 1px);
+        linear-gradient(to right, rgba(99, 102, 241, 0.04) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(99, 102, 241, 0.04) 1px, transparent 1px);
     background-size: 60px 60px;
     z-index: 0;
     pointer-events: none;
     mask-image: radial-gradient(circle at center, black 40%, transparent 85%);
     -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 85%);
+    animation: gridMove 30s linear infinite;
 }
 
 body.dark-theme .tech-grid {
     background-image: 
-        linear-gradient(to right, rgba(52, 211, 153, 0.04) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(52, 211, 153, 0.04) 1px, transparent 1px);
+        linear-gradient(to right, rgba(99, 102, 241, 0.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(99, 102, 241, 0.05) 1px, transparent 1px);
 }
 
 .mouse-glow {
@@ -1781,41 +1782,16 @@ body.dark-theme .bg-watermark {
 }
 
 .login-body .bg-building {
-    animation: buildingEntrance 1.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation: buildingEntrance 1.6s cubic-bezier(0.16, 1, 0.3, 1) both,
+               kenBurns 30s ease-in-out 1.6s infinite alternate;
 }
 
 .login-body .bg-watermark {
-    animation: watermarkEntrance 1.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation: watermarkEntrance 1.8s cubic-bezier(0.16, 1, 0.3, 1) both,
+               watermarkFloat 6s ease-in-out 1.8s infinite;
 }
 
-/* Ambient Floating Background Orbs for Login */
-.login-body .bg-decor {
-    position: fixed;
-    border-radius: 50%;
-    filter: blur(80px);
-    z-index: 0;
-    pointer-events: none;
-    opacity: 0.12;
-    will-change: transform, opacity;
-}
 
-.login-body .decor-1 {
-    width: 350px;
-    height: 350px;
-    background: radial-gradient(circle, var(--primary) 0%, var(--secondary) 100%);
-    top: 10%;
-    left: 10%;
-    animation: floatDecor1 22s ease-in-out infinite alternate;
-}
-
-.login-body .decor-2 {
-    width: 400px;
-    height: 400px;
-    background: radial-gradient(circle, var(--accent) 0%, var(--primary) 100%);
-    bottom: 15%;
-    right: 15%;
-    animation: floatDecor2 26s ease-in-out infinite alternate-reverse;
-}
 
 /* Press Feedback for Submit Button */
 .btn-submit:active {
@@ -1867,34 +1843,6 @@ body.dark-theme .bg-watermark {
     from {
         opacity: 0;
         transform: translate(35px, 35px) scale(0.95);
-    }
-}
-
-@keyframes floatDecor1 {
-    0% {
-        transform: translate(0, 0) scale(1) rotate(0deg);
-        opacity: 0.12;
-    }
-    50% {
-        opacity: 0.18;
-    }
-    100% {
-        transform: translate(80px, 50px) scale(1.15) rotate(180deg);
-        opacity: 0.08;
-    }
-}
-
-@keyframes floatDecor2 {
-    0% {
-        transform: translate(0, 0) scale(1) rotate(0deg);
-        opacity: 0.12;
-    }
-    50% {
-        opacity: 0.08;
-    }
-    100% {
-        transform: translate(-100px, -60px) scale(1.2) rotate(-180deg);
-        opacity: 0.16;
     }
 }
 
@@ -2040,5 +1988,217 @@ body.dark-theme .input-field:focus {
 .login-body .card:hover {
     transform: translateY(-2px);
     box-shadow: 0 20px 40px -12px rgba(99, 102, 241, 0.12), 0 0 0 1px rgba(99, 102, 241, 0.1);
+}
+
+/* ==========================================================================
+   Premium Aurora Gradient Background
+   ========================================================================== */
+
+.aurora-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.aurora-bg .aurora-layer {
+    position: absolute;
+    border-radius: 50%;
+    will-change: transform, opacity;
+}
+
+.aurora-bg .aurora-1 {
+    width: 55vw;
+    height: 55vw;
+    background: radial-gradient(ellipse at 30% 40%, #1565C0 0%, transparent 65%);
+    top: -15%;
+    left: -10%;
+    animation: auroraFlow1 28s ease-in-out infinite alternate;
+    opacity: 0.35;
+    filter: blur(80px);
+}
+
+.aurora-bg .aurora-2 {
+    width: 50vw;
+    height: 50vw;
+    background: radial-gradient(ellipse at 60% 30%, #5E35B1 0%, transparent 65%);
+    bottom: -20%;
+    right: -10%;
+    animation: auroraFlow2 25s ease-in-out infinite alternate-reverse;
+    opacity: 0.3;
+    filter: blur(80px);
+}
+
+.aurora-bg .aurora-3 {
+    width: 45vw;
+    height: 45vw;
+    background: radial-gradient(ellipse at 50% 50%, #26C6DA 0%, transparent 65%);
+    top: 30%;
+    left: 35%;
+    animation: auroraFlow3 30s ease-in-out infinite alternate;
+    opacity: 0.25;
+    filter: blur(80px);
+}
+
+.aurora-bg .aurora-4 {
+    width: 40vw;
+    height: 40vw;
+    background: radial-gradient(ellipse at 40% 60%, rgba(255,255,255,0.6) 0%, transparent 65%);
+    top: 10%;
+    right: 5%;
+    animation: auroraFlow4 26s ease-in-out infinite alternate-reverse;
+    opacity: 0.18;
+    filter: blur(80px);
+}
+
+@keyframes auroraFlow1 {
+    0% { transform: translate(0, 0) scale(1) rotate(0deg); opacity: 0.35; }
+    50% { transform: translate(60px, -40px) scale(1.1) rotate(30deg); opacity: 0.45; }
+    100% { transform: translate(-40px, 60px) scale(0.95) rotate(60deg); opacity: 0.3; }
+}
+
+@keyframes auroraFlow2 {
+    0% { transform: translate(0, 0) scale(1) rotate(0deg); opacity: 0.3; }
+    50% { transform: translate(-50px, 50px) scale(1.12) rotate(-45deg); opacity: 0.4; }
+    100% { transform: translate(40px, -30px) scale(0.9) rotate(-90deg); opacity: 0.22; }
+}
+
+@keyframes auroraFlow3 {
+    0% { transform: translate(0, 0) scale(1) rotate(0deg); opacity: 0.25; }
+    50% { transform: translate(70px, 40px) scale(1.08) rotate(40deg); opacity: 0.35; }
+    100% { transform: translate(-50px, -20px) scale(0.95) rotate(80deg); opacity: 0.2; }
+}
+
+@keyframes auroraFlow4 {
+    0% { transform: translate(0, 0) scale(1) rotate(0deg); opacity: 0.18; }
+    50% { transform: translate(-30px, -50px) scale(1.06) rotate(-30deg); opacity: 0.25; }
+    100% { transform: translate(30px, 40px) scale(0.95) rotate(-60deg); opacity: 0.12; }
+}
+
+/* ==========================================================================
+   Floating Particles
+   ========================================================================== */
+
+.floating-particles {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+@keyframes particleRise {
+    0% { transform: translateY(0) scale(1); opacity: 0; }
+    10% { opacity: var(--p-opacity, 0.15); }
+    85% { opacity: var(--p-opacity, 0.15); }
+    100% { transform: translateY(-110vh) scale(0.3); opacity: 0; }
+}
+
+/* ==========================================================================
+   Ken Burns Background Effect
+   ========================================================================== */
+
+@keyframes kenBurns {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.05); }
+}
+
+/* ==========================================================================
+   Watermark Floating Effect
+   ========================================================================== */
+
+@keyframes watermarkFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+/* ==========================================================================
+   Glass Reflection Shine Effect
+   ========================================================================== */
+
+.login-body .card::after {
+    content: '';
+    position: absolute;
+    top: -100%;
+    left: -100%;
+    width: 300%;
+    height: 300%;
+    background: linear-gradient(
+        45deg,
+        transparent 25%,
+        rgba(255, 255, 255, 0.06) 40%,
+        rgba(255, 255, 255, 0.12) 50%,
+        rgba(255, 255, 255, 0.06) 60%,
+        transparent 75%
+    );
+    pointer-events: none;
+    z-index: 1;
+    animation: cardShine 7s ease-in-out infinite;
+    will-change: transform;
+}
+
+body.dark-theme .login-body .card::after {
+    background: linear-gradient(
+        45deg,
+        transparent 25%,
+        rgba(255, 255, 255, 0.03) 40%,
+        rgba(255, 255, 255, 0.07) 50%,
+        rgba(255, 255, 255, 0.03) 60%,
+        transparent 75%
+    );
+}
+
+@keyframes cardShine {
+    0%, 85% { transform: translate(-100%, -100%) rotate(25deg); }
+    92% { transform: translate(100%, 100%) rotate(25deg); }
+    100% { transform: translate(100%, 100%) rotate(25deg); }
+}
+
+/* ==========================================================================
+   Animated Grid Overlay
+   ========================================================================== */
+
+@keyframes gridMove {
+    0% { background-position: 0 0; }
+    100% { background-position: 60px 60px; }
+}
+
+/* ==========================================================================
+   Reduce Motion Preferences
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+    .aurora-bg,
+    .aurora-bg .aurora-layer,
+    .floating-particles,
+    .floating-particles i,
+    .login-body .bg-building,
+    .login-body .bg-watermark,
+    .login-body .card::after,
+    .tech-grid,
+    .mouse-glow {
+        animation: none !important;
+    }
+
+    .login-body .bg-building {
+        transform: none !important;
+    }
+
+    .login-body .bg-watermark {
+        transform: none !important;
+    }
+
+    .tech-grid {
+        background-position: 0 0 !important;
+    }
+
+    .login-body .card::after {
+        display: none !important;
+    }
+
+    .floating-particles i {
+        display: none !important;
+    }
 }
 
