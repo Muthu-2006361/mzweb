@@ -18,9 +18,9 @@
     /* Light Theme Settings */
     --bg-base: #f8fafc;
     --bg-gradient: radial-gradient(ellipse at 15% 20%, rgba(99,102,241,0.08) 0%, transparent 50%),
-                   radial-gradient(ellipse at 85% 25%, rgba(16,185,129,0.06) 0%, transparent 50%),
-                   radial-gradient(ellipse at 50% 85%, rgba(52,211,153,0.05) 0%, transparent 45%),
-                   linear-gradient(135deg, #f8fafc 0%, #f4faf6 50%, #effff1 100%);
+                   radial-gradient(ellipse at 85% 25%, rgba(38,198,218,0.06) 0%, transparent 50%),
+                   radial-gradient(ellipse at 50% 80%, rgba(94,53,177,0.05) 0%, transparent 45%),
+                   linear-gradient(135deg, #eef2ff 0%, #f5f3ff 50%, #ecfdf5 100%);
     --bg-surface: rgba(255, 255, 255, 0.72);
     --bg-header: rgba(255, 255, 255, 0.85);
     --border-color: rgba(99, 102, 241, 0.08);
@@ -53,9 +53,9 @@ body.dark-theme {
     /* Dark Theme Settings */
     --bg-base: #050906;
     --bg-gradient: radial-gradient(ellipse at 15% 20%, rgba(99, 102, 241, 0.14) 0%, transparent 50%),
-                   radial-gradient(ellipse at 85% 25%, rgba(16, 185, 129, 0.1) 0%, transparent 50%),
-                   radial-gradient(ellipse at 50% 85%, rgba(52, 211, 153, 0.05) 0%, transparent 45%),
-                   linear-gradient(135deg, #050906 0%, #070e0a 50%, #020503 100%);
+                   radial-gradient(ellipse at 85% 25%, rgba(38, 198, 218, 0.1) 0%, transparent 50%),
+                   radial-gradient(ellipse at 50% 80%, rgba(94, 53, 177, 0.08) 0%, transparent 45%),
+                   linear-gradient(135deg, #0a0a1a 0%, #100b1a 50%, #0a0a14 100%);
     --bg-surface: rgba(15, 23, 42, 0.55);
     --bg-header: rgba(15, 23, 42, 0.8);
     --border-color: rgba(255, 255, 255, 0.08);
@@ -1988,71 +1988,75 @@ body.dark-theme .input-field:focus {
 }
 
 .aurora-bg .aurora-1 {
-    width: 55vw;
-    height: 55vw;
+    width: 70vw;
+    height: 70vw;
     background: radial-gradient(ellipse at 30% 40%, #1565C0 0%, transparent 65%);
-    top: -15%;
-    left: -10%;
+    top: -20%;
+    left: -15%;
     animation: auroraFlow1 28s ease-in-out infinite alternate;
-    opacity: 0.35;
-    filter: blur(80px);
+    opacity: 0.16;
+    filter: blur(120px);
 }
 
 .aurora-bg .aurora-2 {
-    width: 50vw;
-    height: 50vw;
+    width: 60vw;
+    height: 60vw;
     background: radial-gradient(ellipse at 60% 30%, #5E35B1 0%, transparent 65%);
-    bottom: -20%;
-    right: -10%;
+    bottom: -25%;
+    right: -15%;
     animation: auroraFlow2 25s ease-in-out infinite alternate-reverse;
-    opacity: 0.3;
-    filter: blur(80px);
+    opacity: 0.14;
+    filter: blur(120px);
 }
 
 .aurora-bg .aurora-3 {
-    width: 45vw;
-    height: 45vw;
+    width: 50vw;
+    height: 50vw;
     background: radial-gradient(ellipse at 50% 50%, #26C6DA 0%, transparent 65%);
-    top: 30%;
-    left: 35%;
+    top: 25%;
+    left: 30%;
     animation: auroraFlow3 30s ease-in-out infinite alternate;
-    opacity: 0.25;
-    filter: blur(80px);
-}
-
-.aurora-bg .aurora-4 {
-    width: 40vw;
-    height: 40vw;
-    background: radial-gradient(ellipse at 40% 60%, rgba(255,255,255,0.6) 0%, transparent 65%);
-    top: 10%;
-    right: 5%;
-    animation: auroraFlow4 26s ease-in-out infinite alternate-reverse;
-    opacity: 0.18;
-    filter: blur(80px);
+    opacity: 0.1;
+    filter: blur(120px);
 }
 
 @keyframes auroraFlow1 {
-    0% { transform: translate(0, 0) scale(1) rotate(0deg); opacity: 0.35; }
-    50% { transform: translate(60px, -40px) scale(1.1) rotate(30deg); opacity: 0.45; }
-    100% { transform: translate(-40px, 60px) scale(0.95) rotate(60deg); opacity: 0.3; }
+    0% { transform: translate(0, 0) scale(1) rotate(0deg); opacity: 0.16; }
+    50% { transform: translate(50px, -30px) scale(1.08) rotate(30deg); opacity: 0.2; }
+    100% { transform: translate(-30px, 50px) scale(0.95) rotate(60deg); opacity: 0.12; }
 }
 
 @keyframes auroraFlow2 {
-    0% { transform: translate(0, 0) scale(1) rotate(0deg); opacity: 0.3; }
-    50% { transform: translate(-50px, 50px) scale(1.12) rotate(-45deg); opacity: 0.4; }
-    100% { transform: translate(40px, -30px) scale(0.9) rotate(-90deg); opacity: 0.22; }
+    0% { transform: translate(0, 0) scale(1) rotate(0deg); opacity: 0.14; }
+    50% { transform: translate(-40px, 40px) scale(1.1) rotate(-45deg); opacity: 0.18; }
+    100% { transform: translate(30px, -20px) scale(0.92) rotate(-90deg); opacity: 0.1; }
 }
 
 @keyframes auroraFlow3 {
-    0% { transform: translate(0, 0) scale(1) rotate(0deg); opacity: 0.25; }
-    50% { transform: translate(70px, 40px) scale(1.08) rotate(40deg); opacity: 0.35; }
-    100% { transform: translate(-50px, -20px) scale(0.95) rotate(80deg); opacity: 0.2; }
+    0% { transform: translate(0, 0) scale(1) rotate(0deg); opacity: 0.1; }
+    50% { transform: translate(60px, 30px) scale(1.06) rotate(40deg); opacity: 0.14; }
+    100% { transform: translate(-40px, -10px) scale(0.95) rotate(80deg); opacity: 0.08; }
 }
 
-@keyframes auroraFlow4 {
-    0% { transform: translate(0, 0) scale(1) rotate(0deg); opacity: 0.18; }
-    50% { transform: translate(-30px, -50px) scale(1.06) rotate(-30deg); opacity: 0.25; }
-    100% { transform: translate(30px, 40px) scale(0.95) rotate(-60deg); opacity: 0.12; }
+/* ==========================================================================
+   Card Ambient Glow
+   ========================================================================== */
+
+.card-glow {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 620px;
+    height: 620px;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.08) 0%, rgba(94, 53, 177, 0.04) 40%, transparent 70%);
+    pointer-events: none;
+    z-index: 1;
+    will-change: opacity;
+}
+
+body.dark-theme .card-glow {
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.12) 0%, rgba(94, 53, 177, 0.06) 40%, transparent 70%);
 }
 
 /* ==========================================================================
@@ -2146,6 +2150,7 @@ body.dark-theme .login-body .card::after {
     .login-body .bg-building,
     .login-body .bg-watermark,
     .login-body .card::after,
+    .card-glow,
     .mouse-glow {
         animation: none !important;
     }

@@ -112,7 +112,6 @@
         <div class="aurora-layer aurora-1"></div>
         <div class="aurora-layer aurora-2"></div>
         <div class="aurora-layer aurora-3"></div>
-        <div class="aurora-layer aurora-4"></div>
     </div>
 
     <!-- Floating Particles -->
@@ -127,6 +126,8 @@
     <div class="bg-watermark">
         <img src="mzcetlogo.png" alt="MZCET Watermark" draggable="false" style="width:100%;height:100%;object-fit:contain;">
     </div>
+
+    <div class="card-glow"></div>
 
     <div class="container">
         <div class="card">
@@ -754,7 +755,7 @@
     </style>
 
     <script>
-        (function(){var c=document.getElementById('particles');if(!c)return;for(var i=0;i<35;i++){var p=document.createElement('i');var s=2+Math.random()*4,l=Math.random()*100,d=Math.random()*15,dr=14+Math.random()*16,o=0.1+Math.random()*0.15;p.style.cssText='position:absolute;left:'+l+'%;bottom:-10px;width:'+s+'px;height:'+s+'px;border-radius:50%;background:radial-gradient(circle at center,rgba(255,255,255,0.9),rgba(198,223,255,0.4));animation:particleRise '+dr+'s linear '+d+'s infinite;--p-opacity:'+o+';filter:blur(1.5px);';c.appendChild(p);}})();
+        (function(){var c=document.getElementById('particles');if(!c)return;var cl=['rgba(99,102,241,0.7),rgba(99,102,241,0)','rgba(38,198,218,0.6),rgba(38,198,218,0)','rgba(94,53,177,0.6),rgba(94,53,177,0)','rgba(21,101,192,0.6),rgba(21,101,192,0)'];for(var i=0;i<35;i++){var p=document.createElement('i');var s=1.5+Math.random()*3,l=Math.random()*100,d=Math.random()*20,dr=18+Math.random()*22,o=0.06+Math.random()*0.14,ci=Math.floor(Math.random()*cl.length);p.style.cssText='position:absolute;left:'+l+'%;bottom:-10px;width:'+s+'px;height:'+s+'px;border-radius:50%;background:radial-gradient(circle at center,'+cl[ci]+');animation:particleRise '+dr+'s linear '+d+'s infinite;--p-opacity:'+o+';';c.appendChild(p);}})();
     </script>
     <script>
         (function(){var b=document.querySelector('.login-body');if(!b)return;var l=b.querySelectorAll('.parallax-layer');document.addEventListener('mousemove',function(e){var x=(e.clientX/window.innerWidth-0.5)*20,y=(e.clientY/window.innerHeight-0.5)*20;requestAnimationFrame(function(){for(var i=0;i<l.length;i++){var el=l[i],d=parseFloat(el.getAttribute('data-depth'))||0.5;el.style.transform='translate('+(x*d)+'px,'+(y*d)+'px)';}});});})();
