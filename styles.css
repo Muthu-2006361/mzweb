@@ -149,27 +149,7 @@ body {
     100% { transform: translate(-50px, -40px) scale(0.92) rotate(180deg); }
 }
 
-/* Tech Grid & Mouse Glow Elements */
-.tech-grid {
-    position: fixed;
-    inset: 0;
-    background-image: 
-        linear-gradient(to right, rgba(99, 102, 241, 0.04) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(99, 102, 241, 0.04) 1px, transparent 1px);
-    background-size: 60px 60px;
-    z-index: 0;
-    pointer-events: none;
-    mask-image: radial-gradient(circle at center, black 40%, transparent 85%);
-    -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 85%);
-    animation: gridMove 30s linear infinite;
-}
-
-body.dark-theme .tech-grid {
-    background-image: 
-        linear-gradient(to right, rgba(99, 102, 241, 0.05) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(99, 102, 241, 0.05) 1px, transparent 1px);
-}
-
+/* Mouse Glow Elements */
 .mouse-glow {
     position: fixed;
     top: 0;
@@ -2156,15 +2136,6 @@ body.dark-theme .login-body .card::after {
 }
 
 /* ==========================================================================
-   Animated Grid Overlay
-   ========================================================================== */
-
-@keyframes gridMove {
-    0% { background-position: 0 0; }
-    100% { background-position: 60px 60px; }
-}
-
-/* ==========================================================================
    Reduce Motion Preferences
    ========================================================================== */
 
@@ -2176,7 +2147,6 @@ body.dark-theme .login-body .card::after {
     .login-body .bg-building,
     .login-body .bg-watermark,
     .login-body .card::after,
-    .tech-grid,
     .mouse-glow {
         animation: none !important;
     }
@@ -2187,10 +2157,6 @@ body.dark-theme .login-body .card::after {
 
     .login-body .bg-watermark {
         transform: none !important;
-    }
-
-    .tech-grid {
-        background-position: 0 0 !important;
     }
 
     .login-body .card::after {
