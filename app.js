@@ -1417,7 +1417,7 @@ if (userRole && userRole.toLowerCase() === 'student') {
       url = url + separator + 'token=' + encodeURIComponent(token);
     }
 
-    window.open(url, '_blank');
+    window.location.href = url;
 }
 
   function escapeHtml(text) {
