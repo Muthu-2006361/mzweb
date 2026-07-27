@@ -2167,3 +2167,56 @@ body.dark-theme .login-body .card::after {
     }
 }
 
+/* ==========================================================================
+   Header Accreditation Logos (NAAC, NBA)
+   ========================================================================== */
+
+.header-accreditations {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    flex-shrink: 0;
+    margin-left: auto;
+    padding-left: 20px;
+}
+
+.accreditation-logo {
+    height: 68px;
+    width: auto;
+    border-radius: 8px;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), filter 0.3s ease;
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.08));
+    object-fit: contain;
+}
+
+#naacLogo {
+    height: 90px;
+}
+
+.accreditation-logo:hover {
+    transform: scale(1.08);
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.15));
+}
+
+body.dark-theme .accreditation-logo {
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.3)) brightness(0.9);
+}
+
+body.dark-theme .accreditation-logo:hover {
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4)) brightness(1);
+}
+
+@media (max-width: 768px) {
+    .header-accreditations {
+        margin-left: 0;
+        padding-left: 0;
+        gap: 16px;
+    }
+    .accreditation-logo {
+        height: 40px;
+    }
+    #naacLogo {
+        height: 52px;
+    }
+}
+
