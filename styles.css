@@ -271,18 +271,24 @@ body.dark-theme .bg-building {
     display: flex;
     align-items: center;
     justify-content: center;
+    isolation: isolate;
+    position: relative;
+    z-index: 1;
 }
 
 .mzcet-header-logo img {
     height: 96px;
     width: auto;
     filter: drop-shadow(0 4px 10px rgba(0, 36, 114, 0.15));
-    transition: var(--transition-fast);
+    transition: transform var(--transition-fast), filter var(--transition-fast);
     border-radius: 15px;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
 }
 
 .mzcet-header-logo img:hover {
-    transform: scale(1.05);
+    transform: translateZ(0) scale(1.05);
 }
 
 .mzcet-header-text {
