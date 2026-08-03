@@ -1133,6 +1133,9 @@ if (userRole && userRole.toLowerCase() === 'student') {
   // Server-backed Card Data Storage (syncs across all computers)
   // =====================
   var cardDataCache = { customCards: [], edits: {}, deletedDefaults: [], deletedCustoms: [] };
+  // False until the initial server load finishes; renderCards() is a no-op
+  // before that so search/first paint never shows fallback default cards.
+  var cardsLoaded = false;
   // Custom card ids added during THIS page session (their POST is already in flight)
   var sessionAddedIds = {};
   // In-flight add POSTs, keyed by card id (edit PUTs must wait for them to avoid 404)
@@ -1310,6 +1313,7 @@ if (userRole && userRole.toLowerCase() === 'student') {
   // Card Rendering
   // =====================
   function renderCards() {
+    if (!cardsLoaded) return;
     var container = document.getElementById('cardsContainer');
     var customCards = getCustomCards();
     var edits = getCardEdits();
@@ -1525,6 +1529,7 @@ if (userRole && userRole.toLowerCase() === 'student') {
 
   loadDefaultCardsFromServer(function () {
     loadCardsFromServer(function () {
+      cardsLoaded = true;
       renderCards();
     });
   });
