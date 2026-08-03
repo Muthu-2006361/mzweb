@@ -749,10 +749,13 @@ app.get("/api/default-cards", function (req, res) {
 app.get("/api/cards", async (req, res) => {
   try {
     if (!pool || !pool.connected) { await connectDB(); }
+    if (!pool || !pool.connected) {
+      return res.status(503).json({ success: false, message: "Database not available" });
+    }
     const result = await pool.request()
-      .query("SELECT DataKey, DataValue FROM AppData WHERE DataKey IN ('customCards', 'edits', 'deletedDefaults')");
+      .query("SELECT DataKey, DataValue FROM AppData WHERE DataKey IN ('customCards', 'edits', 'deletedDefaults', 'deletedCustoms')");
 
-    const config = { customCards: [], edits: {}, deletedDefaults: [] };
+    const config = { customCards: [], edits: {}, deletedDefaults: [], deletedCustoms: [] };
     result.recordset.forEach(function (row) {
       try { config[row.DataKey] = JSON.parse(row.DataValue); }
       catch (e) { config[row.DataKey] = row.DataKey === 'edits' ? {} : []; }
@@ -776,6 +779,16 @@ async function upsertAppData(key, value) {
     `);
 }
 
+// Serializes read-modify-write access to AppData so concurrent card mutations
+// from multiple systems never lose updates (two simultaneous adds previously
+// both read the same array and one write silently overwrote the other).
+let appDataWriteQueue = Promise.resolve();
+function withAppDataLock(fn) {
+  const run = appDataWriteQueue.then(fn, fn);
+  appDataWriteQueue = run.catch(function () {});
+  return run;
+}
+
 async function getAppDataArray(key) {
   const r = await pool.request()
     .input("key", sql.NVarChar(100), key)
@@ -794,6 +807,14 @@ async function getAppDataObject(key) {
 
 app.post("/api/cards", verifyToken, async (req, res) => {
   try {
+    if (req.user.role !== "admin") {
+      return res.status(403).json({ success: false, message: "Admin access required" });
+    }
+    if (!pool || !pool.connected) { await connectDB(); }
+    if (!pool || !pool.connected) {
+      return res.status(503).json({ success: false, message: "Database not available" });
+    }
+
     const { id, name, url, icon, image } = req.body;
     if (!name || !url) {
       return res.status(400).json({ success: false, message: "Name and URL are required" });
@@ -806,9 +827,26 @@ app.post("/api/cards", verifyToken, async (req, res) => {
       image: image || "",
       isDefault: false,
     };
-    const customCards = await getAppDataArray("customCards");
-    customCards.push(newCard);
-    await upsertAppData("customCards", JSON.stringify(customCards));
+
+    let customCards;
+    await withAppDataLock(async function () {
+      customCards = await getAppDataArray("customCards");
+      const existing = customCards.findIndex(function (c) { return c.id === newCard.id; });
+      if (existing !== -1) {
+        // Duplicate POST (retry / race): update instead of duplicating
+        customCards[existing] = newCard;
+      } else {
+        // A deleted card must never come back, even if a stale/in-flight POST
+        // arrives after the DELETE. New cards always get fresh ids, so there is
+        // no legitimate re-add of a tombstoned id.
+        const deletedCustoms = await getAppDataArray("deletedCustoms");
+        if (deletedCustoms.indexOf(newCard.id) !== -1) {
+          return res.status(409).json({ success: false, message: "This card was deleted and cannot be re-added" });
+        }
+        customCards.push(newCard);
+      }
+      await upsertAppData("customCards", JSON.stringify(customCards));
+    });
     res.json({ success: true, message: "Card added", card: newCard });
   } catch (err) {
     console.error("Add card error:", err);
@@ -818,25 +856,40 @@ app.post("/api/cards", verifyToken, async (req, res) => {
 
 app.put("/api/cards/:id", verifyToken, async (req, res) => {
   try {
+    if (req.user.role !== "admin") {
+      return res.status(403).json({ success: false, message: "Admin access required" });
+    }
+    if (!pool || !pool.connected) { await connectDB(); }
+    if (!pool || !pool.connected) {
+      return res.status(503).json({ success: false, message: "Database not available" });
+    }
+
     const cardId = req.params.id;
     const { name, url, icon, image } = req.body;
 
     if (cardId.indexOf("default-") === 0) {
       // Save as edit for a default card
-      const edits = await getAppDataObject("edits");
-      edits[cardId] = { name: name, url: url, icon: icon, image: image };
-      await upsertAppData("edits", JSON.stringify(edits));
+      await withAppDataLock(async function () {
+        const edits = await getAppDataObject("edits");
+        edits[cardId] = { name: name, url: url, icon: icon, image: image };
+        await upsertAppData("edits", JSON.stringify(edits));
+      });
     } else {
       // Update a custom card in the array
-      const customCards = await getAppDataArray("customCards");
-      const idx = customCards.findIndex(function (c) { return c.id === cardId; });
-      if (idx !== -1) {
-        if (name !== undefined) customCards[idx].name = name;
-        if (url !== undefined) customCards[idx].url = url;
-        if (icon !== undefined) customCards[idx].icon = icon;
-        if (image !== undefined) customCards[idx].image = image;
-        await upsertAppData("customCards", JSON.stringify(customCards));
-      }
+      await withAppDataLock(async function () {
+        const customCards = await getAppDataArray("customCards");
+        const idx = customCards.findIndex(function (c) { return c.id === cardId; });
+        if (idx !== -1) {
+          if (name !== undefined) customCards[idx].name = name;
+          if (url !== undefined) customCards[idx].url = url;
+          if (icon !== undefined) customCards[idx].icon = icon;
+          if (image !== undefined) customCards[idx].image = image;
+          await upsertAppData("customCards", JSON.stringify(customCards));
+        } else {
+          // Card no longer exists (deleted on another system) - nothing to update
+          return res.status(404).json({ success: false, message: "Card not found" });
+        }
+      });
     }
     res.json({ success: true, message: "Card updated" });
   } catch (err) {
@@ -847,18 +900,35 @@ app.put("/api/cards/:id", verifyToken, async (req, res) => {
 
 app.delete("/api/cards/:id", verifyToken, async (req, res) => {
   try {
+    if (req.user.role !== "admin") {
+      return res.status(403).json({ success: false, message: "Admin access required" });
+    }
+    if (!pool || !pool.connected) { await connectDB(); }
+    if (!pool || !pool.connected) {
+      return res.status(503).json({ success: false, message: "Database not available" });
+    }
+
     const cardId = req.params.id;
 
     if (cardId.indexOf("default-") === 0) {
       // Mark default card as deleted
-      const deleted = await getAppDataArray("deletedDefaults");
-      if (deleted.indexOf(cardId) === -1) deleted.push(cardId);
-      await upsertAppData("deletedDefaults", JSON.stringify(deleted));
+      await withAppDataLock(async function () {
+        const deleted = await getAppDataArray("deletedDefaults");
+        if (deleted.indexOf(cardId) === -1) deleted.push(cardId);
+        await upsertAppData("deletedDefaults", JSON.stringify(deleted));
+      });
     } else {
-      // Remove custom card from array
-      const customCards = await getAppDataArray("customCards");
-      const filtered = customCards.filter(function (c) { return c.id !== cardId; });
-      await upsertAppData("customCards", JSON.stringify(filtered));
+      // Remove custom card from array + tombstone the id so stale local copies
+      // on other systems never resurrect it
+      await withAppDataLock(async function () {
+        const customCards = await getAppDataArray("customCards");
+        const filtered = customCards.filter(function (c) { return c.id !== cardId; });
+        await upsertAppData("customCards", JSON.stringify(filtered));
+
+        const deletedCustoms = await getAppDataArray("deletedCustoms");
+        if (deletedCustoms.indexOf(cardId) === -1) deletedCustoms.push(cardId);
+        await upsertAppData("deletedCustoms", JSON.stringify(deletedCustoms));
+      });
     }
     res.json({ success: true, message: "Card deleted" });
   } catch (err) {

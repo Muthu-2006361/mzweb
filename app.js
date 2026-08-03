@@ -2,6 +2,7 @@
   var LOCAL_STORAGE_KEY = 'mzweb_custom_cards';
   var LOCAL_EDITS_KEY = 'mzweb_card_edits';
   var LOCAL_DELETED_KEY = 'mzweb_deleted_default_ids';
+  var LOCAL_DELETED_CUSTOM_KEY = 'mzweb_deleted_custom_ids';
 
   function getLocalCustomCards() {
     try { return JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY)) || []; } catch (_) { return []; }
@@ -15,6 +16,10 @@
     try { return JSON.parse(localStorage.getItem(LOCAL_DELETED_KEY)) || []; } catch (_) { return []; }
   }
 
+  function getLocalDeletedCustoms() {
+    try { return JSON.parse(localStorage.getItem(LOCAL_DELETED_CUSTOM_KEY)) || []; } catch (_) { return []; }
+  }
+
   function getDeletedDefaultIds() {
     return cardDataCache.deletedDefaults;
   }
@@ -26,10 +31,14 @@
     try { localStorage.setItem(LOCAL_DELETED_KEY, JSON.stringify(cardDataCache.deletedDefaults)); } catch (_) {}
     var token = sessionStorage.getItem('mzweb_token');
     if (token) {
-      fetch('/api/cards/' + id, {
+      fetch('/api/cards/' + encodeURIComponent(id), {
         method: 'DELETE',
         headers: { 'Authorization': 'Bearer ' + token }
-      }).catch(function() {});
+      }).then(function (r) {
+        if (!r.ok) showToast('Delete could not be synced to the server.', true);
+      }).catch(function () {
+        showToast('Delete could not be synced to the server.', true);
+      });
     }
   }
 
@@ -1038,7 +1047,14 @@ if (userRole && userRole.toLowerCase() === 'student') {
   }
 
   // Submit (Add / Edit)
-  document.getElementById('websiteModalSubmit').addEventListener('click', function () {
+  var modalBusy = false;
+  // Submits are chained so a quick follow-up action (e.g. editing a card right
+  // after adding it) is queued instead of being dropped by the modalBusy guard
+  // while the previous add POST is still in flight.
+  var submitChain = Promise.resolve();
+  var handleSubmit = function () {
+    if (modalBusy) return;
+
     var name = document.getElementById('websiteName').value.trim();
     var url = document.getElementById('websiteUrl').value.trim();
     if (!name || !url) {
@@ -1059,172 +1075,175 @@ if (userRole && userRole.toLowerCase() === 'student') {
     }
 
     if (editingCardId) {
+      modalBusy = true;
       saveEdit(editingCardId, { name: name, url: url, icon: icon, image: image });
-    } else {
-      var newCard = {
-        id: 'custom-' + Date.now(),
-        name: name,
-        url: url,
-        icon: icon,
-        image: image,
-        isDefault: false,
-      };
-      var customCards = getCustomCards();
-      customCards.push(newCard);
-      saveCustomCards(customCards);
-      var token = sessionStorage.getItem('mzweb_token');
-      if (token) {
-        fetch('/api/cards', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-          body: JSON.stringify(newCard)
-        }).then(function(r) {
-          if (!r.ok) { console.error('Card POST failed:', r.status, r.statusText); }
-        }).catch(function(e) { console.error('Card POST error:', e); });
-      }
+      modalBusy = false;
+      closeModal();
+      renderCards();
+      return;
     }
-    closeModal();
+
+    modalBusy = true;
+    var newCard = {
+      id: 'custom-' + Date.now(),
+      name: name,
+      url: url,
+      icon: icon,
+      image: image,
+      isDefault: false,
+    };
+    var customCards = getCustomCards();
+    customCards.push(newCard);
+    saveCustomCards(customCards);
+    sessionAddedIds[newCard.id] = true;
     renderCards();
+    closeModal();
+
+    var token = sessionStorage.getItem('mzweb_token');
+    if (!token) {
+      modalBusy = false;
+      showToast('Card saved locally only. Login as admin to sync it to the server.', true);
+      return;
+    }
+    return pendingPosts[newCard.id] = fetch('/api/cards', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify(newCard)
+    })
+      .then(function (r) {
+        if (!r.ok) throw new Error('Card POST failed: ' + r.status);
+      })
+      .then(function () {
+        showToast('Card synced to the server.', false);
+      })
+      .catch(function (e) {
+        console.error('Card POST error:', e);
+        showToast('Card saved locally, but could not be synced to the server. Other systems may not see it.', true);
+      })
+      .then(function () {
+        delete pendingPosts[newCard.id];
+        modalBusy = false;
+      });
+  };
+  document.getElementById('websiteModalSubmit').addEventListener('click', function () {
+    submitChain = submitChain.then(handleSubmit);
   });
 
   // =====================
   // Server-backed Card Data Storage (syncs across all computers)
   // =====================
-  var cardDataCache = { customCards: [], edits: {}, deletedDefaults: [] };
+  var cardDataCache = { customCards: [], edits: {}, deletedDefaults: [], deletedCustoms: [] };
+  // Custom card ids added during THIS page session (their POST is already in flight)
+  var sessionAddedIds = {};
+  // In-flight add POSTs, keyed by card id (edit PUTs must wait for them to avoid 404)
+  var pendingPosts = {};
 
   function loadCardsFromServer(callback) {
     var token = sessionStorage.getItem('mzweb_token');
     fetch('/api/cards')
-      .then(function(r) { return r.json(); })
-      .then(function(data) {
-        console.log('Server cards response:', JSON.stringify(data));
-        if (data.success && data.data) {
-          cardDataCache = data.data;
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (!data.success || !data.data) {
+          throw new Error('Invalid server response');
         }
+        var server = data.data;
+        var serverCustom = server.customCards || [];
+        var serverCustomIds = serverCustom.map(function (c) { return c.id; });
+        var serverDeletedCustoms = server.deletedCustoms || [];
+        var serverDeletedDefaults = server.deletedDefaults || [];
         var localCustom = getLocalCustomCards();
         var localEdits = getLocalEdits();
-        var localDeleted = getLocalDeletedDefaults();
-        console.log('Local custom cards:', JSON.stringify(localCustom));
-        var serverCardIds = cardDataCache.customCards.map(function(c) { return c.id; });
-        var serverEditKeys = Object.keys(cardDataCache.edits);
-        var promises = [];
-        localCustom.forEach(function(c) {
-          if (serverCardIds.indexOf(c.id) === -1) {
-            cardDataCache.customCards.push(c);
-            console.log('Merged local card:', c.name);
-            if (token) {
-              promises.push(fetch('/api/cards', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-                body: JSON.stringify(c)
-              }));
-            }
+        var localDeletedCustoms = getLocalDeletedCustoms();
+        var localDeletedDefaults = getLocalDeletedDefaults();
+
+        // Union of tombstones: a card deleted anywhere (this browser or the server)
+        // must never come back, even from stale localStorage copies.
+        var tombstone = {};
+        serverDeletedCustoms.concat(localDeletedCustoms).forEach(function (id) {
+          tombstone[id] = true;
+        });
+
+        // Server is authoritative: server cards minus tombstoned ones,
+        // plus any local-only cards (offline additions / in-flight adds this session).
+        var finalCustom = serverCustom.filter(function (c) { return !tombstone[c.id]; });
+        var finalIds = finalCustom.map(function (c) { return c.id; });
+        var syncPosts = [];
+
+        localCustom.forEach(function (c) {
+          if (tombstone[c.id]) return;
+          if (finalIds.indexOf(c.id) !== -1) return;
+          finalCustom.push(c);
+          finalIds.push(c.id);
+          if (isAdmin && token && !sessionAddedIds[c.id]) {
+            syncPosts.push(fetch('/api/cards', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+              body: JSON.stringify(c)
+            }));
           }
         });
-        for (var k in localEdits) {
-          if (!cardDataCache.edits[k]) {
-            cardDataCache.edits[k] = localEdits[k];
-            if (token) {
-              promises.push(fetch('/api/cards/' + k, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-                body: JSON.stringify(localEdits[k])
-              }));
-            }
-          }
-        }
-        localDeleted.forEach(function(id) {
-          if (cardDataCache.deletedDefaults.indexOf(id) === -1) {
-            cardDataCache.deletedDefaults.push(id);
-            if (token) {
-              promises.push(fetch('/api/cards/' + id, {
-                method: 'DELETE',
-                headers: { 'Authorization': 'Bearer ' + token }
-              }));
-            }
+        cardDataCache.customCards = finalCustom;
+
+        // Edits: server is authoritative for default cards; keep unsynced local
+        // default-card edits (offline sessions) and push them up.
+        var edits = {};
+        var serverEdits = server.edits || {};
+        Object.keys(serverEdits).forEach(function (k) { edits[k] = serverEdits[k]; });
+        Object.keys(localEdits).forEach(function (k) {
+          if (k.indexOf('default-') !== 0) return;
+          if (edits[k]) return;
+          edits[k] = localEdits[k];
+          if (isAdmin && token) {
+            syncPosts.push(fetch('/api/cards/' + encodeURIComponent(k), {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+              body: JSON.stringify(localEdits[k])
+            }));
           }
         });
-        console.log('Final cardDataCache:', JSON.stringify(cardDataCache));
-        Promise.all(promises).then(function() {
+        cardDataCache.edits = edits;
+
+        // Deleted defaults: union (deleting a default card is deliberate + idempotent)
+        var deletedDefaults = serverDeletedDefaults.slice();
+        localDeletedDefaults.forEach(function (id) {
+          if (deletedDefaults.indexOf(id) === -1) deletedDefaults.push(id);
+        });
+        cardDataCache.deletedDefaults = deletedDefaults;
+
+        // Push the tombstone union to the server (idempotent DELETE calls)
+        cardDataCache.deletedCustoms = Object.keys(tombstone);
+        cardDataCache.deletedCustoms.forEach(function (id) {
+          if (serverDeletedCustoms.indexOf(id) === -1 && isAdmin && token) {
+            syncPosts.push(fetch('/api/cards/' + encodeURIComponent(id), {
+              method: 'DELETE',
+              headers: { 'Authorization': 'Bearer ' + token }
+            }));
+          }
+        });
+
+        // Persist the reconciled, authoritative state locally so stale copies
+        // never linger and re-infect the next load.
+        try {
+          localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(finalCustom));
+          localStorage.setItem(LOCAL_EDITS_KEY, JSON.stringify(edits));
+          localStorage.setItem(LOCAL_DELETED_KEY, JSON.stringify(deletedDefaults));
+          localStorage.setItem(LOCAL_DELETED_CUSTOM_KEY, JSON.stringify(cardDataCache.deletedCustoms));
+        } catch (_) {}
+
+        Promise.all(syncPosts).then(function () {
           if (callback) callback();
-        }).catch(function() {
+        }).catch(function () {
           if (callback) callback();
         });
       })
-      .catch(function(err) {
+      .catch(function (err) {
         console.error('Failed to load cards from server:', err);
         cardDataCache.customCards = getLocalCustomCards();
         cardDataCache.edits = getLocalEdits();
         cardDataCache.deletedDefaults = getLocalDeletedDefaults();
+        cardDataCache.deletedCustoms = getLocalDeletedCustoms();
         if (callback) callback();
       });
-  }
-
-  function migrateLocalData(callback) {
-    var localCustom = getLocalCustomCards();
-    var localEdits = getLocalEdits();
-    var localDeleted = getLocalDeletedDefaults();
-    var hasLocal = localCustom.length > 0 || Object.keys(localEdits).length > 0 || localDeleted.length > 0;
-
-    // Only migrate if server has no data but localStorage has data
-    var serverHasData = cardDataCache.customCards.length > 0 || Object.keys(cardDataCache.edits).length > 0 || cardDataCache.deletedDefaults.length > 0;
-    if (!hasLocal || serverHasData) {
-      if (callback) callback();
-      return;
-    }
-
-    var token = sessionStorage.getItem('mzweb_token');
-    if (!token) {
-      // No auth token, keep using localStorage data
-      cardDataCache.customCards = localCustom;
-      cardDataCache.edits = localEdits;
-      cardDataCache.deletedDefaults = localDeleted;
-      if (callback) callback();
-      return;
-    }
-
-    var promises = [];
-    localCustom.forEach(function(card) {
-      promises.push(fetch('/api/cards', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-        body: JSON.stringify(card)
-      }));
-    });
-    Object.keys(localEdits).forEach(function(cardId) {
-      promises.push(fetch('/api/cards/' + cardId, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-        body: JSON.stringify(localEdits[cardId])
-      }));
-    });
-    localDeleted.forEach(function(cardId) {
-      promises.push(fetch('/api/cards/' + cardId, {
-        method: 'DELETE',
-        headers: { 'Authorization': 'Bearer ' + token }
-      }));
-    });
-
-    if (promises.length === 0) {
-      if (callback) callback();
-      return;
-    }
-
-    var allOk = true;
-    Promise.all(promises.map(function(p) {
-      return p.then(function(r) { return r.ok; }).catch(function() { allOk = false; return false; });
-    })).then(function(results) {
-      results.forEach(function(ok) { if (!ok) allOk = false; });
-      if (allOk) {
-        localStorage.removeItem(LOCAL_STORAGE_KEY);
-        localStorage.removeItem(LOCAL_EDITS_KEY);
-        localStorage.removeItem(LOCAL_DELETED_KEY);
-      }
-      cardDataCache.customCards = localCustom;
-      cardDataCache.edits = localEdits;
-      cardDataCache.deletedDefaults = localDeleted;
-      if (callback) callback();
-    });
   }
 
   function getCustomCards() {
@@ -1241,15 +1260,49 @@ if (userRole && userRole.toLowerCase() === 'student') {
   }
 
   function saveEdit(cardId, data) {
-    cardDataCache.edits[cardId] = data;
-    try { localStorage.setItem(LOCAL_EDITS_KEY, JSON.stringify(cardDataCache.edits)); } catch (_) {}
+    var isDefaultCard = cardId.indexOf('default-') === 0;
+
+    if (isDefaultCard) {
+      // Default cards: store the override in the edits map (matches the server)
+      cardDataCache.edits[cardId] = data;
+      try { localStorage.setItem(LOCAL_EDITS_KEY, JSON.stringify(cardDataCache.edits)); } catch (_) {}
+    } else {
+      // Custom cards: apply the change directly to the card object, never to the
+      // edits map (stale per-card edits were overriding newer server data).
+      var customCards = getCustomCards();
+      for (var i = 0; i < customCards.length; i++) {
+        if (customCards[i].id === cardId) {
+          if (data.name !== undefined) customCards[i].name = data.name;
+          if (data.url !== undefined) customCards[i].url = data.url;
+          if (data.icon !== undefined) customCards[i].icon = data.icon;
+          if (data.image !== undefined) customCards[i].image = data.image;
+          break;
+        }
+      }
+      saveCustomCards(customCards);
+    }
+
     var token = sessionStorage.getItem('mzweb_token');
-    if (token) {
-      fetch('/api/cards/' + cardId, {
+    if (!token) {
+      showToast('Changes saved locally only. Login as admin to sync them to the server.', true);
+      return;
+    }
+    function putEdit() {
+      return fetch('/api/cards/' + encodeURIComponent(cardId), {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
         body: JSON.stringify(data)
-      }).catch(function() {});
+      }).then(function (r) {
+        if (!r.ok) showToast('Changes could not be synced to the server.', true);
+      }).catch(function () {
+        showToast('Changes could not be synced to the server.', true);
+      });
+    }
+    if (pendingPosts[cardId]) {
+      // Card was just added; wait for its POST to land before editing it
+      pendingPosts[cardId].then(putEdit);
+    } else {
+      putEdit();
     }
   }
 
@@ -1278,7 +1331,8 @@ if (userRole && userRole.toLowerCase() === 'student') {
     customCards.forEach(function (card) {
       var merged = {};
       for (var k in card) merged[k] = card[k];
-      if (edits[card.id]) {
+      // Only default cards may have edits applied; custom cards are edited in place
+      if (card.id && card.id.indexOf('default-') === 0 && edits[card.id]) {
         for (var ek in edits[card.id]) merged[ek] = edits[card.id][ek];
       }
       allCards.push(merged);
@@ -1309,9 +1363,9 @@ if (userRole && userRole.toLowerCase() === 'student') {
 
       var iconHtml = '';
       if (card.image) {
-        iconHtml = '<img src="' + card.image + '" alt="' + card.name + '" style="width:100%;height:100%;object-fit:cover;border-radius:22px;" onerror="this.parentElement.innerHTML=\'<i class=\\\'fas fa-globe\\\'></i>\'">';
+        iconHtml = '<img src="' + escapeHtml(card.image) + '" alt="' + escapeHtml(card.name) + '" style="width:100%;height:100%;object-fit:cover;border-radius:22px;" onerror="this.parentElement.innerHTML=\'<i class=\\\'fas fa-globe\\\'></i>\'">';
       } else {
-        iconHtml = '<i class="fas ' + (card.icon || 'fa-globe') + '"></i>';
+        iconHtml = '<i class="fas ' + escapeHtml(card.icon || 'fa-globe') + '"></i>';
       }
 
       var actionsHtml = '';
@@ -1397,11 +1451,35 @@ if (userRole && userRole.toLowerCase() === 'student') {
         var customCards = getCustomCards();
         customCards = customCards.filter(function (c) { return c.id !== id; });
         saveCustomCards(customCards);
+
+        // Record a local tombstone so this card never resurrects from stale
+        // localStorage copies, even if this delete fails to reach the server now.
+        var deletedCustoms = getLocalDeletedCustoms();
+        if (deletedCustoms.indexOf(id) === -1) {
+          deletedCustoms.push(id);
+          try { localStorage.setItem(LOCAL_DELETED_CUSTOM_KEY, JSON.stringify(deletedCustoms)); } catch (_) {}
+        }
+        if (cardDataCache.deletedCustoms && cardDataCache.deletedCustoms.indexOf(id) === -1) {
+          cardDataCache.deletedCustoms.push(id);
+        }
+        delete sessionAddedIds[id];
+
         if (token) {
-          fetch('/api/cards/' + id, {
-            method: 'DELETE',
-            headers: { 'Authorization': 'Bearer ' + token }
-          }).catch(function() {});
+          var delReq = function () {
+            return fetch('/api/cards/' + encodeURIComponent(id), {
+              method: 'DELETE',
+              headers: { 'Authorization': 'Bearer ' + token }
+            }).then(function (r) {
+              if (!r.ok) showToast('Delete could not be synced to the server. It may reappear for other systems.', true);
+            }).catch(function () {
+              showToast('Delete could not be synced to the server. It may reappear for other systems.', true);
+            });
+          };
+          if (pendingPosts[id]) {
+            pendingPosts[id].then(delReq);
+          } else {
+            delReq();
+          }
         }
       }
       renderCards();
@@ -1411,14 +1489,33 @@ if (userRole && userRole.toLowerCase() === 'student') {
   function navigate(url) {
     if (!url || url === '#') return;
 
+    // Only hand the SSO token to same-system SSO pages (sso.html), never to
+    // external websites - appending it to every URL broke external links.
     var token = sessionStorage.getItem('mzweb_token');
-    if (token) {
+    if (token && url.indexOf('sso.html') !== -1) {
       var separator = url.indexOf('?') !== -1 ? '&' : '?';
       url = url + separator + 'token=' + encodeURIComponent(token);
     }
 
     window.location.href = url;
-}
+  }
+
+  function showToast(message, isError) {
+    var toast = document.getElementById('syncToast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'syncToast';
+      toast.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:99999;padding:12px 22px;border-radius:12px;font-family:Inter,system-ui,sans-serif;font-size:0.85rem;font-weight:600;color:#fff;box-shadow:0 12px 40px rgba(0,0,0,0.4);pointer-events:none;';
+      document.body.appendChild(toast);
+    }
+    toast.style.background = isError ? '#dc2626' : '#059669';
+    toast.textContent = message;
+    if (showToast._timer) clearTimeout(showToast._timer);
+    showToast._timer = setTimeout(function () {
+      if (toast.parentNode) toast.parentNode.removeChild(toast);
+      showToast._timer = null;
+    }, 6000);
+  }
 
   function escapeHtml(text) {
     var div = document.createElement('div');
@@ -1426,8 +1523,10 @@ if (userRole && userRole.toLowerCase() === 'student') {
     return div.innerHTML;
   }
 
-  loadCardsFromServer(function () {
-    renderCards();
+  loadDefaultCardsFromServer(function () {
+    loadCardsFromServer(function () {
+      renderCards();
+    });
   });
 
   // Dynamic mouse tracking glow
