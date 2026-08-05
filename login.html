@@ -127,7 +127,7 @@
 
     <!-- College Crest Watermark -->
     <div class="bg-watermark">
-        <img src="mzcetlogo.png" alt="MZCET Watermark" draggable="false" style="width:100%;height:100%;object-fit:contain;">
+        <img src="mzcetlogo.png" alt="MZCET Watermark" draggable="false">
     </div>
 
     <div class="card-glow"></div>
@@ -135,7 +135,7 @@
     <div class="container">
         <div class="card">
             <div class="card-header">
-                <div class="logo-wrapper"><img src="MZ PLacement logo.png" alt="MZ Placements" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;"></div>
+                <div class="logo-wrapper"><img src="MZ PLacement logo.png" alt="MZ Placements"></div>
                 <h2 class="card-title">MZ Placements</h2>
                 <p class="card-subtitle">Sign in to access the portal</p>
             </div>
@@ -152,7 +152,7 @@
 
             <form id="loginForm" novalidate>
                 <!-- User Type Selection Dropdown (Custom Styled) -->
-                <div class="form-group" style="position: relative; z-index: 200;">
+                <div class="form-group" id="userTypeGroup">
                     <div class="custom-select-wrapper" id="userTypeSelectWrapper">
                         <div class="custom-select-trigger input-field select-field">
                             <span class="selected-text" id="selectedUserText">Student</span>
@@ -363,9 +363,9 @@
 
     <footer class="site-footer">
         <div class="footer-contact">
-            <span><i class="fas fa-phone-alt"></i> +91-7373344444</span>
-            <span><a href="https://mail.google.com/mail/?view=cm&to=info@mountzion.ac.in" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:none;"><i class="fas fa-envelope"></i> info@mountzion.ac.in</a></span>
-            <span class="footer-contact-item"><i class="fas fa-map-marker-alt"></i> <a href="https://maps.app.goo.gl/EtJT5E4jm8gvRkZq9" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:none;">Lena Vilakku, Pillivalam Post, Pudukkottai – 622507</a></span>
+<span><i class="fas fa-phone-alt"></i> +91-7373344444</span>
+            <span><a href="https://mail.google.com/mail/?view=cm&to=info@mountzion.ac.in" target="_blank" rel="noopener noreferrer"><i class="fas fa-envelope"></i> info@mountzion.ac.in</a></span>
+            <span class="footer-contact-item"><i class="fas fa-map-marker-alt"></i> <a href="https://maps.app.goo.gl/EtJT5E4jm8gvRkZq9" target="_blank" rel="noopener noreferrer">Lena Vilakku, Pillivalam Post, Pudukkottai – 622507</a></span>
         </div>
 
         <div class="footer-copyright">
@@ -374,7 +374,7 @@
     </footer>
 
     <!-- Password Change Modal -->
-    <div id="passwordChangeModal" class="password-change-overlay" style="display:none;">
+    <div id="passwordChangeModal" class="password-change-overlay">
         <div class="password-change-card">
             <div class="password-change-header">
                 <button type="button" id="passwordChangeBackBtn" class="back-button" aria-label="Go back">
@@ -388,7 +388,7 @@
                 <p>Your account is using the default password. Please set a new password to continue.</p>
             </div>
             <form id="passwordChangeForm" novalidate>
-                <div class="password-change-error" id="passwordChangeError" style="display:none;">
+                <div class="password-change-error" id="passwordChangeError">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="12" cy="12" r="10"></circle>
                         <line x1="12" y1="8" x2="12" y2="12"></line>
@@ -396,7 +396,7 @@
                     </svg>
                     <span id="passwordChangeErrorText"></span>
                 </div>
-                <div class="password-change-success" id="passwordChangeSuccess" style="display:none;">
+                <div class="password-change-success" id="passwordChangeSuccess">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                         <polyline points="22 4 12 14.01 9 11.01"></polyline>
@@ -454,7 +454,7 @@
     </div>
 
     <!-- Forgot Password Modal -->
-    <div id="forgotPasswordOverlay" class="password-change-overlay" style="display:none;">
+    <div id="forgotPasswordOverlay" class="password-change-overlay">
         <div class="password-change-card">
             <div class="password-change-header">
                 <div class="password-change-icon"><i class="fas fa-lock"></i></div>
@@ -462,7 +462,7 @@
                 <p>Enter your Register Number and Date of Birth to verify your identity.</p>
             </div>
             <div id="forgotStepVerify">
-                <div class="password-change-error" id="forgotError" style="display:none;">
+                <div class="password-change-error" id="forgotError">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="12" cy="12" r="10"></circle>
                         <line x1="12" y1="8" x2="12" y2="12"></line>
@@ -501,13 +501,13 @@
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
                     </span>
                 </button>
-                <div style="text-align:center;margin-top:16px;">
-                    <a href="#" id="forgotBackLink" style="font-size:0.82rem;color:var(--text-secondary);text-decoration:none;"><i class="fas fa-arrow-left"></i> Back to Sign In</a>
+                <div class="forgot-back-wrap">
+                    <a href="#" id="forgotBackLink"><i class="fas fa-arrow-left"></i> Back to Sign In</a>
                 </div>
             </div>
-            <div id="forgotStepReset" style="display:none;">
+            <div id="forgotStepReset">
                 <form id="forgotResetForm" novalidate>
-                    <div class="password-change-error" id="forgotResetError" style="display:none;">
+                    <div class="password-change-error" id="forgotResetError">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="12" cy="12" r="10"></circle>
                             <line x1="12" y1="8" x2="12" y2="12"></line>
@@ -515,7 +515,7 @@
                         </svg>
                         <span id="forgotResetErrorText"></span>
                     </div>
-                    <div class="password-change-success" id="forgotResetSuccess" style="display:none;">
+                    <div class="password-change-success" id="forgotResetSuccess">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                             <polyline points="22 4 12 14.01 9 11.01"></polyline>
@@ -583,7 +583,7 @@
             background: rgba(0,0,0,0.6);
             -webkit-backdrop-filter: blur(8px);
             backdrop-filter: blur(8px);
-            display: flex;
+            display: none;
             align-items: center;
             justify-content: center;
             z-index: 9999;
@@ -650,7 +650,7 @@
             transform: scale(0.95);
         }
         .password-change-error {
-            display: flex;
+            display: none;
             align-items: center;
             gap: 8px;
             background: #fef2f2;
@@ -661,7 +661,7 @@
             margin-bottom: 16px;
         }
         .password-change-success {
-            display: flex;
+            display: none;
             align-items: center;
             gap: 8px;
             background: #f0fdf4;
@@ -670,6 +670,18 @@
             border-radius: 12px;
             font-size: 0.85rem;
             margin-bottom: 16px;
+        }
+        #forgotStepReset {
+            display: none;
+        }
+        #forgotBackLink {
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+        }
+        .forgot-back-wrap {
+            text-align: center;
+            margin-top: 16px;
         }
         .password-conditions {
             margin: -8px 0 16px;

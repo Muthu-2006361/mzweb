@@ -19,6 +19,12 @@ app.use(cors({
   origin: corsOrigins
 }));
 app.use(express.json());
+app.use(function (req, res, next) {
+  if (/\.(png|jpe?g|gif|svg|webp|bmp|ico)$/i.test(req.path)) {
+    res.setHeader("Cache-Control", "public, max-age=604800");
+  }
+  next();
+});
 app.use(express.static(__dirname));
 
 const dbConfig = {

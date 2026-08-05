@@ -157,8 +157,8 @@
       background-size: 60px 60px;
       z-index: 0;
       pointer-events: none;
-      mask-image: radial-gradient(circle at center, black 40%, transparent 85%);
       -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 85%);
+      mask-image: radial-gradient(circle at center, black 40%, transparent 85%);
     }
 
     .mouse-glow {
@@ -207,6 +207,14 @@
       max-width: 480px;
       margin-left: auto;
       margin-right: auto;
+    }
+
+    header img {
+      width: 80px;
+      height: auto;
+      margin-bottom: 1rem;
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
     }
 
     .cards-container {
@@ -403,8 +411,8 @@
 
     footer span {
       background: linear-gradient(135deg, var(--secondary), var(--pink));
-      background-clip: text;
       -webkit-background-clip: text;
+      background-clip: text;
       -webkit-text-fill-color: transparent;
     }
 
@@ -662,22 +670,22 @@
       background-position: center;
       opacity: 0.08;
       will-change: opacity;
-      mask-image: linear-gradient(to right, rgba(0, 0, 0, 1) 60%, rgba(0, 0, 0, 0) 100%);
       -webkit-mask-image: linear-gradient(to right, rgba(0, 0, 0, 1) 60%, rgba(0, 0, 0, 0) 100%);
+      mask-image: linear-gradient(to right, rgba(0, 0, 0, 1) 60%, rgba(0, 0, 0, 0) 100%);
       transition: opacity 0.3s ease, filter 0.3s ease;
       filter: brightness(0.6) contrast(1.1) saturate(0.7);
-      user-select: none;
       -webkit-user-select: none;
       -moz-user-select: none;
       -ms-user-select: none;
+      user-select: none;
     }
 
     @media (max-width: 768px) {
       .bg-building {
         width: 100%;
         opacity: 0.04;
-        mask-image: none;
         -webkit-mask-image: none;
+        mask-image: none;
       }
     }
   </style>
@@ -699,7 +707,7 @@
   <div class="bg-building"></div>
 
   <header>
-    <img src="logo-header.png" alt="MZ Placements" style="width:80px;height:auto;margin-bottom:1rem;border-radius:15px;box-shadow:0 4px 20px rgba(99,102,241,0.3);">
+    <img src="logo-header.png" alt="MZ Placements">
     <h1>Unified Web Portal</h1>
     <p>Access all applications from one place.</p>
   </header>

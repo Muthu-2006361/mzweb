@@ -561,7 +561,7 @@
             forgotVerifyBtn.classList.remove('loading');
             pendingResetToken = data.resetToken;
             forgotStepVerify.style.display = 'none';
-            forgotStepReset.style.display = '';
+            forgotStepReset.style.display = 'block';
             forgotNewPassword.value = '';
             forgotConfirmPassword.value = '';
             forgotResetError.style.display = 'none';
@@ -940,7 +940,7 @@ if (userRole && userRole.toLowerCase() === 'student') {
       document.querySelectorAll('.tab-switch button').forEach(function (b) { b.classList.remove('active'); });
       document.querySelector('.tab-switch button[data-tab="image"]').classList.add('active');
       document.getElementById('iconPicker').style.display = 'none';
-      document.getElementById('imageUrlInput').style.display = '';
+      document.getElementById('imageUrlInput').style.display = 'block';
       document.getElementById('uploadInput').style.display = 'none';
     } else if (card.icon) {
       selectedTab = 'icon';
@@ -993,8 +993,8 @@ if (userRole && userRole.toLowerCase() === 'student') {
       btn.classList.add('active');
       selectedTab = btn.getAttribute('data-tab');
       document.getElementById('iconPicker').style.display = selectedTab === 'icon' ? '' : 'none';
-      document.getElementById('imageUrlInput').style.display = selectedTab === 'image' ? '' : 'none';
-      document.getElementById('uploadInput').style.display = selectedTab === 'upload' ? '' : 'none';
+      document.getElementById('imageUrlInput').style.display = selectedTab === 'image' ? 'block' : 'none';
+      document.getElementById('uploadInput').style.display = selectedTab === 'upload' ? 'block' : 'none';
       updateLogoPreview();
     });
   });
