@@ -815,11 +815,14 @@
 
   if (userNameDisplay) {
     if (userRole === 'hod') {
-      userNameDisplay.textContent = storedName || 'Head of Department';
+      var hodName = (storedName || 'HOD').replace(/^hod\s*/i, '').toUpperCase();
+      userNameDisplay.textContent = 'HOD' + (hodName ? ' ' + hodName.replace(/[_\.]/g, ' ') : '');
     } else if (userRole === 'principal') {
-      userNameDisplay.textContent = storedName || 'Principal';
+      userNameDisplay.textContent = (storedName || 'PRINCIPAL').toUpperCase();
     } else if (isAdmin) {
-      userNameDisplay.textContent = storedName || 'Administrator';
+      userNameDisplay.textContent = 'ADMINISTRATOR';
+    } else if (userRole === 'alumni') {
+      userNameDisplay.textContent = (storedName || 'ALUMNI').toUpperCase();
     } else {
       userNameDisplay.textContent = storedName || 'Student';
     }
