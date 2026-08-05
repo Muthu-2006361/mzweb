@@ -802,6 +802,13 @@
     });
 
   var storedName = sessionStorage.getItem('userName');
+  var atIndex = storedName ? storedName.indexOf('@') : -1;
+  if (atIndex > 0) {
+    storedName = storedName.substring(0, atIndex).replace(/\d+$/, '');
+  }
+  if (storedName) {
+    storedName = storedName.replace(/(^|[_\.])(\w)/g, function (m, sep, ch) { return sep + ch.toUpperCase(); });
+  }
   var storedReg = sessionStorage.getItem('registerNumber');
   var isAdmin = sessionStorage.getItem('mzweb_admin') === 'true';
   var userRole = sessionStorage.getItem('mzweb_role');
