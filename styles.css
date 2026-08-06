@@ -1138,23 +1138,37 @@ body.dark-theme .card-badge {
 .icon-wrapper {
     width: 72px;
     height: 72px;
+    padding: 0;
     border-radius: 20px;
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(139, 92, 246, 0.04));
-    border: 1.5px solid var(--border-color);
+    background: transparent;
+    border: none;
     color: var(--primary);
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1.75rem;
     transition: var(--transition-slow);
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.02);
+    box-shadow: 0 10px 20px rgba(15, 23, 42, 0.05);
+    overflow: hidden;
+}
+
+.icon-wrapper.has-image {
+    background: transparent;
+    border: none;
+    box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
 }
 
 .cards-container .card:hover .icon-wrapper {
     transform: scale(1.1) rotate(-4deg);
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(139, 92, 246, 0.08));
-    box-shadow: 0 8px 24px rgba(99, 102, 241, 0.08);
-    border-color: rgba(99, 102, 241, 0.2);
+    background: var(--bg-surface);
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+    border: none;
+}
+
+.cards-container .card:hover .icon-wrapper.has-image {
+    background: var(--bg-surface);
+    border: none;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
 }
 
 .cards-container .card h3 {
@@ -1527,7 +1541,9 @@ body.dark-theme .tab-switch button.active {
 }
 
 .logo-preview.has-image {
-    border: 2px solid var(--primary);
+    border: 2px solid rgba(15, 23, 42, 0.08);
+    background: var(--bg-surface);
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
     overflow: hidden;
 }
 
@@ -1535,6 +1551,30 @@ body.dark-theme .tab-switch button.active {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    border-radius: inherit;
+    display: block;
+}
+
+.icon-wrapper.has-image {
+    background: var(--bg-surface);
+    border-color: rgba(15, 23, 42, 0.08);
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+}
+
+.cards-container .card:hover .icon-wrapper.has-image {
+    background: var(--bg-surface);
+    border-color: rgba(15, 23, 42, 0.12);
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+}
+
+.icon-wrapper img,
+.icon-wrapper.has-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    border-radius: inherit;
+    display: block;
 }
 
 .modal .btn-primary {

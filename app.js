@@ -304,7 +304,7 @@
         })
         .then(function (data) {
           sessionStorage.setItem('registerNumber', data.user.registerNumber);
-          sessionStorage.setItem('userName', data.user.name);
+          sessionStorage.setItem('userName', data.user.name ? data.user.name.toUpperCase() : data.user.name);
           sessionStorage.setItem('mzweb_role', data.user.role);
           if (data.token) {
             sessionStorage.setItem('mzweb_token', data.token);
@@ -808,6 +808,7 @@
   }
   if (storedName) {
     storedName = storedName.replace(/(^|[_\.])(\w)/g, function (m, sep, ch) { return sep + ch.toUpperCase(); });
+    storedName = storedName.toUpperCase();
   }
   var storedReg = sessionStorage.getItem('registerNumber');
   var isAdmin = sessionStorage.getItem('mzweb_admin') === 'true';
@@ -824,7 +825,7 @@
     } else if (userRole === 'alumni') {
       userNameDisplay.textContent = (storedName || 'ALUMNI').toUpperCase();
     } else {
-      userNameDisplay.textContent = storedName || 'Student';
+      userNameDisplay.textContent = (storedName || 'STUDENT').toUpperCase();
     }
   }
 var regDisplay = document.getElementById('registerDisplay');
@@ -846,13 +847,13 @@ if (userRole && userRole.toLowerCase() === 'student') {
   var welcomeTitle = document.getElementById('welcomeTitle');
   if (welcomeTitle) {
     if (userRole === 'hod') {
-      welcomeTitle.textContent = 'Welcome back, Head of Department!';
+      welcomeTitle.textContent = 'WELCOME, HEAD OF DEPARTMENT!';
     } else if (userRole === 'principal') {
-      welcomeTitle.textContent = 'Welcome back, Principal!';
+      welcomeTitle.textContent = 'WELCOME, PRINCIPAL!';
     } else if (isAdmin) {
-      welcomeTitle.textContent = 'WELCOME, Administrator!';
+      welcomeTitle.textContent = 'WELCOME, ADMINISTRATOR!';
     } else if (storedReg) {
-      welcomeTitle.textContent = 'WELCOME, ' + storedName ;
+      welcomeTitle.textContent = 'WELCOME, ' + (storedName || 'STUDENT').toUpperCase();
     }
   }
 
@@ -1045,7 +1046,7 @@ if (userRole && userRole.toLowerCase() === 'student') {
         preview.classList.remove('has-image');
       }
     } else if (selectedTab === 'upload' && uploadedFileData) {
-      preview.innerHTML = '<img src="' + uploadedFileData + '" alt="Logo" style="width:100%;height:100%;object-fit:cover;border-radius:18px;">';
+      preview.innerHTML = '<img src="' + uploadedFileData + '" alt="Logo">';
       preview.classList.add('has-image');
     } else if (selectedTab === 'upload') {
       preview.innerHTML = '<i class="fas fa-cloud-arrow-up"></i>';
@@ -1375,6 +1376,7 @@ if (userRole && userRole.toLowerCase() === 'student') {
       cardEl.className = 'card';
       cardEl.setAttribute('data-url', card.url);
 
+      var iconWrapperClasses = 'icon-wrapper';
       var iconHtml = '';
       if (card.image) {
         iconHtml = '<img src="' + escapeHtml(card.image) + '" alt="' + escapeHtml(card.name) + '" style="width:100%;height:100%;object-fit:cover;border-radius:22px;" onerror="this.parentElement.innerHTML=\'<i class=\\\'fas fa-globe\\\'></i>\'">';
@@ -1390,7 +1392,7 @@ if (userRole && userRole.toLowerCase() === 'student') {
 
       cardEl.innerHTML =
         actionsHtml +
-        '<div class="icon-wrapper">' + iconHtml + '</div>' +
+        '<div class="' + iconWrapperClasses + '">' + iconHtml + '</div>' +
         '<h3>' + escapeHtml(card.name) + '</h3>' +
         '<p>Click to open ' + escapeHtml(card.name) + '</p>' +
         '<button class="btn-open"><i class="fas fa-external-link-alt"></i> Open</button>';
