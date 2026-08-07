@@ -719,6 +719,29 @@ body.dark-theme .custom-option.selected .option-icon {
     background: rgba(99, 102, 241, 0.06);
 }
 
+/* Hide native browser password reveal / clear controls to avoid duplicate icons */
+input[type="password"] {
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+/* Edge/IE built-in reveal/clear buttons */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+    display: none;
+}
+
+/* WebKit-based browsers (attempt to hide built-in decoration container) */
+input[type="password"]::-webkit-textfield-decoration-container {
+    display: none !important;
+}
+
+/* As an extra fallback, disable pointer-events on the browser's decoration
+   so our custom toggle remains the only clickable reveal control. */
+input[type="password"]::-webkit-textfield-decoration-container > * {
+    pointer-events: none;
+}
+
 .form-forgot {
     display: flex;
     justify-content: flex-end;
